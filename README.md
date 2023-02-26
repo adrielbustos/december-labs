@@ -1,2 +1,2 @@
 # december-labs
-Prueba técnica de de transacciones
+Prueba técnica / Transacciones
