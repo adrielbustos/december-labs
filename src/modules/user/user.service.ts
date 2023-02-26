@@ -1,7 +1,5 @@
 export default class UserService {
-    constructor() {
-        console.log("UserService");
-    }
+    constructor() {}
     public newUser = async () => {
         console.log("newUser");
     }

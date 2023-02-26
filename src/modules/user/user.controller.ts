@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import HandleReqError from "../../utils/handleError";
 import UserService from "./user.service";
 
 class UserController {
@@ -13,12 +14,8 @@ class UserController {
                 ok: true,
                 message: "New user created"
             });
-        } catch (error) {
-            console.log(error);
-            res.status(500).json({
-                ok: false,
-                message: "Error to create new user"
-            });
+        } catch (error:any) {
+            HandleReqError.httpError(res, error, "Error to create new user");
         }
     }
 }

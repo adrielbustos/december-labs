@@ -1,16 +1,13 @@
-import express, { Application } from "express";
+import express, { Request, Response, NextFunction, Application } from "express";
 import cors from "cors";
 import { initDb } from "./db";
-import userRoutes from "../modules/user/user.routes";
 import Config from "./config";
+import indexRoutes from '../routes';
 
 class Server {
 
-    private app:Application;
-    private port:string;
-    private paths = {
-        user: Config.API_PREFIX + "/user"
-    }
+    private app: Application;
+    private port: string;
 
     constructor() {
         this.app = express();
@@ -27,7 +24,7 @@ class Server {
         });
     }
 
-    public listen():void {
+    public listen(): void {
         this.app.listen(this.port, () => {
             console.log("server active on port: " + this.port + "");
         });
@@ -36,10 +33,22 @@ class Server {
     private middlewares() {
         this.app.use(cors());
         this.app.use(express.json());
+        this.app.use((req: Request, res: Response, next: NextFunction) => {
+            console.log(`\n [Request] \n`);
+            try {
+                next();
+            } catch (error: any) {
+                res.status(500).json({ status: false, msg: JSON.stringify(error) });
+            }
+        });
     }
 
     private routes() {
-        this.app.use(this.paths.user, userRoutes);
+        this.app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+            console.error(err.stack);
+            res.status(500).send('Something went wrong!');
+        });
+        this.app.use(Config.API_PREFIX, indexRoutes);
     }
 
 }
