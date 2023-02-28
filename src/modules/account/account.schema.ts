@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 const accountSchema = new Schema({
-    amount: {
+    balance: {
         type: Number,
         required: true
     },
@@ -13,4 +13,5 @@ const accountSchema = new Schema({
     timestamps: true
 });
 accountSchema.set('versionKey', false);
-export default model("account", accountSchema);
+const AccountModel = model("account", accountSchema);
+export default AccountModel;

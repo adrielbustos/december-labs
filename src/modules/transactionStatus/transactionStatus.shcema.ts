@@ -8,4 +8,5 @@ const transactionStatusSchema = new Schema({
     timestamps: true
 });
 transactionStatusSchema.set('versionKey', false);
-export default model("transactionStatus", transactionStatusSchema);
+const TransactionStatusModel = model("transactionStatus", transactionStatusSchema);
+export default TransactionStatusModel;

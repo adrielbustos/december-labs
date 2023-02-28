@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import HandleReqError from "../../utils/handleError";
+import IUser from "./user.interface";
 import UserService from "./user.service";
 
 class UserController {
@@ -9,15 +10,13 @@ class UserController {
     }
     public newUser = async (req: Request, res: Response) => {
         try {
-            await this.service.newUser();
-            res.status(200).json({
-                ok: true,
-                message: "New user created"
-            });
+            const body:IUser = req.body;
+            const user = await this.service.newUser(body);
+            return res.status(201).json(user);
         } catch (error:any) {
             HandleReqError.httpError(res, error, "Error to create new user");
         }
     }
 }
 
-export default new UserController(new UserService());
+export default UserController;

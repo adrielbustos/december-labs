@@ -9,4 +9,8 @@ export default class HandleReqError {
             message
         });
     }
+    public static systemError = (err:Error, message:string = "") => {
+        console.log(message);
+        console.log(err);
+    }
 }

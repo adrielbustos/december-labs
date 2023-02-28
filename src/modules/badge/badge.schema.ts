@@ -8,4 +8,5 @@ const badgeSchema = new Schema({
     timestamps: true
 });
 badgeSchema.set('versionKey', false);
-export default model("badge", badgeSchema);
+const BadgeModel = model("badge", badgeSchema);
+export default BadgeModel;

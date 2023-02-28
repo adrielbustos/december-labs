@@ -1,13 +1,18 @@
 import { Router } from "express";
-import { check } from "express-validator";
-import controller from "../modules/user/user.controller";
+import { body } from "express-validator";
+import UserController from "../modules/user/user.controller";
+import UserService from "../modules/user/user.service";
 import Middlewares from "../utils/middlewares";
 const router = Router();
 
+const service = new UserService();
+const uController = new UserController(service);
+
 router.post("/", [
-    check("email", "email is required").isEmail(),
-    check("password", "password is required").isString(),
+    body("email", "email is required").isEmail(),
+    body("password", "password is required").isString(),
+    body("name", "name is required").isString(),
     Middlewares.checkErrors
-], controller.newUser);
+], uController.newUser);
 
 export default router;

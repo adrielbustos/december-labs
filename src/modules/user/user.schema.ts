@@ -23,4 +23,5 @@ const userSchema = new Schema({
     timestamps: true
 });
 userSchema.set('versionKey', false);
-export default model("user", userSchema);
+const UserModel = model("user", userSchema);
+export default UserModel;

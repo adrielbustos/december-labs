@@ -14,16 +14,16 @@ const transactionSchema = new Schema({
         type: Number,
         required: true
     },
-    conversion: {
+    conversion: { // para saber a cuanto se convirtio ese momento
         type: Schema.Types.ObjectId,
         required: true,
         ref: 'conversion'
     },
-    status: {
-        type: Schema.Types.ObjectId,
-        required: true,
-        ref: 'transactionStatus'
-    },
+    // status: {
+    //     type: Schema.Types.ObjectId,
+    //     required: true,
+    //     ref: 'transactionStatus'
+    // },
     commission: {
         type: Number,
         required: true
@@ -31,9 +31,14 @@ const transactionSchema = new Schema({
     date: {
         type: Date,
         required: true
+    },
+    description: {
+        type: String,
+        required: false
     }
 }, {
     timestamps: true
 });
 transactionSchema.set('versionKey', false);
-export default model("transaction", transactionSchema);
+const TransactionModel = model("transaction", transactionSchema);
+export default TransactionModel;
