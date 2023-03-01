@@ -1,7 +1,9 @@
 import Config from "../../utils/config";
 import HandleReqError from "../../utils/handleError";
+
+import ApiLayerService from "../../libs/apilayer/apilayer.service";
 import AccountService from "../account/account.service";
-// import BadgeService from "../badge/badge.service";
+
 import ITransaction from "./transaction.interface";
 import TransactionModel from "./transaction.schema";
 
@@ -18,20 +20,18 @@ class TransactionService {
         transaction.date = new Date();
         // transaction.date = new Date(transaction.date);
         if (transaction.origin === transaction.destination) {
-            transaction.commission = this.createComision(transaction); // TODO comision puede ser una nueva transaccion????
-            // transaction.amount = transaction.amount + transaction.commission; // TODO cuidado con esto
+            transaction.commission = this.createComision(transaction);
         }
-        // TODO validar el BADGE
-        // const badgeService = new BadgeService();
-        // const badge = await badgeService.findBadgeByAmount(transaction.amount);
-        // if (badge) {
-        //     transaction.badge = badge._id;
-        // }
+        let destinationAmunt = transaction.amount;
+        if (origin.badge !== destination.badge) {
+            const apiLayerService = ApiLayerService.getInstance();
+            destinationAmunt = apiLayerService.convertCurrency(transaction.amount, origin.badge._id.toString(), destination.badge._id.toString());
+        }
         const acountService = new AccountService();
-        // TODO SACAR PLATA DE ORIGEN
-        await acountService.subtractBalance(transaction.origin, transaction.amount);
-        // TODO PONER PLATA EN DESTINATION
-        await acountService.addBalance(transaction.destination, transaction.amount);
+        await Promise.all([
+            acountService.subtractBalance(transaction.origin, transaction.amount),
+            acountService.addBalance(transaction.destination, destinationAmunt),
+        ]);
         return await new TransactionModel(transaction).save();
     }
 

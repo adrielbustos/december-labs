@@ -5,6 +5,9 @@ class AccountService {
     public async findAccountById(id: string) {
         return await AccountModel.findById(id);
     }
+    public async findAccountByUserAndBadge(userId: string, badgeId: string) {
+        return await AccountModel.findOne({ user: userId, badge: badgeId });
+    }
     public async subtractBalance(id: string, amount: number) {
         return await AccountModel.findByIdAndUpdate(id, { $inc: { balance: -amount } });
     }

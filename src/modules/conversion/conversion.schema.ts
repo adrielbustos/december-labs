@@ -13,10 +13,11 @@ const conversionSchema = new Schema({
     required: true
   }
 }, {
-  timestamps: true
+  timestamps: false
 });
 conversionSchema.set('versionKey', false);
-export default model("conversion", conversionSchema);
+const ConversionModel = model("conversion", conversionSchema);
+export default ConversionModel;
 
 const conversionSchema2 = new Schema({
   usd: {

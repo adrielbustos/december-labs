@@ -5,7 +5,7 @@ const transactionStatusSchema = new Schema({
         required: true
     },
 }, {
-    timestamps: true
+    timestamps: false
 });
 transactionStatusSchema.set('versionKey', false);
 const TransactionStatusModel = model("transactionStatus", transactionStatusSchema);

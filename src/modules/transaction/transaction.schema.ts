@@ -37,7 +37,7 @@ const transactionSchema = new Schema({
         required: false
     }
 }, {
-    timestamps: true
+    timestamps: false
 });
 transactionSchema.set('versionKey', false);
 const TransactionModel = model("transaction", transactionSchema);

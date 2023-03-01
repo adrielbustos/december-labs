@@ -5,7 +5,7 @@ const badgeSchema = new Schema({
         required: true
     }
 }, {
-    timestamps: true
+    timestamps: false
 });
 badgeSchema.set('versionKey', false);
 const BadgeModel = model("badge", badgeSchema);

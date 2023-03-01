@@ -8,9 +8,14 @@ const accountSchema = new Schema({
         type: Schema.Types.ObjectId,
         required: true,
         ref: 'badge'
+    },
+    user: {
+        type: Schema.Types.ObjectId,
+        required: true,
+        ref: 'user'
     }
 }, {
-    timestamps: true
+    timestamps: false
 });
 accountSchema.set('versionKey', false);
 const AccountModel = model("account", accountSchema);

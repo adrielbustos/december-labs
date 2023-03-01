@@ -11,16 +11,9 @@ const userSchema = new Schema({
     password: {
         type: String,
         required: true
-    },
-    accounts: [
-        {
-            type: Schema.Types.ObjectId,
-            required: true,
-            ref: 'account'
-        }
-    ]
+    }
 }, {
-    timestamps: true
+    timestamps: false
 });
 userSchema.set('versionKey', false);
 const UserModel = model("user", userSchema);

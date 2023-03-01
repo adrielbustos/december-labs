@@ -3,6 +3,8 @@ import cors from "cors";
 import { initDb } from "./db";
 import Config from "./config";
 import indexRoutes from '../routes';
+import ApiLayerService from "../libs/apilayer/apilayer.service";
+import MockData from "./_mockData";
 
 class Server {
 
@@ -17,16 +19,32 @@ class Server {
         this.routes();
     }
 
-    private async connectDb() {
-        console.log("trying to connect to mongo...");
-        initDb().then((mongo) => {
-            console.log("connected to mongo!!!");
-        });
-    }
-
     public listen(): void {
         this.app.listen(this.port, () => {
             console.log("server active on port: " + this.port + "");
+        });
+    }
+
+    private async connectDb() {
+        console.log("trying to connect to mongo...");
+        initDb().then((mongo) => {
+
+            console.log("connected to mongo");
+
+            const mock = new MockData();
+
+            mock.init().then(() => {
+                console.log("Mock data initialized");
+
+                this.initApiLayer().then(() => {
+                    console.log("ApiLayerService initialized");
+                }).catch((error: any) => {
+                    console.log("Error to initialize ApiLayerService: ", error);
+                });
+
+            }).catch((error: any) => {
+                console.log("Error to initialize mock data: ", error);
+            });
         });
     }
 
@@ -49,6 +67,10 @@ class Server {
             res.status(500).send('Something went wrong!');
         });
         this.app.use(Config.API_PREFIX, indexRoutes);
+    }
+
+    private async initApiLayer() {
+        await ApiLayerService.getInstance().init();
     }
 
 }
