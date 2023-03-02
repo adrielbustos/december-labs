@@ -76,21 +76,21 @@ class MockData {
         }
         for (const user of this.users) {
             const userExists = await new UserService().getUserByEmail(user.email);
-            if (userExists.length > 0) {
+            if (userExists) {
                 // console.log("userExists ", userExists);
-                // for (const account of user.accounts) {
-                //     new AccountService().findAccountByUserAndBadge(userExists[0]._id.toString(), account.badge).then(async (account) => {
-                //         if (!account) {
-                //             // const badge = await new BadgeService().findeByName(account.badge);
-                //             const accountModel = new AccountModel({
-                //                 balance: user.accounts[0].balance,
-                //                 badge: await new BadgeService().findeByName(user.accounts[0].badge),
-                //                 user: userExists[0]._id
-                //             });
-                //             accountModel.save();
-                //         }
-                //     });
-                // }
+                for (const account of user.accounts) {
+                    const badge = await new BadgeService().findeByName(account.badge);
+                    const accountExists = await new AccountService().findAccountByUserAndBadge(userExists._id.toString(), badge?._id.toString() ?? "");
+                    // console.log("!accountExists ", !accountExists);
+                    if (!accountExists) {
+                        const accountModel = new AccountModel({
+                            balance: user.accounts[0].balance,
+                            badge: badge?._id.toString(),
+                            user: userExists._id.toString()
+                        });
+                        accountModel.save();
+                    }
+                }
                 continue;
             }
             const userModel = new UserModel({
@@ -100,9 +100,10 @@ class MockData {
             });
             userModel.save().then(async (userSaved) => {
                 for (const account of user.accounts) {
+                    const badge = await new BadgeService().findeByName(account.badge);
                     const accountModel = new AccountModel({
                         balance: account.balance,
-                        badge: await new BadgeService().findeByName(user.accounts[0].badge),
+                        badge: badge?._id.toString(),
                         user: userSaved._id
                     });
                     accountModel.save();

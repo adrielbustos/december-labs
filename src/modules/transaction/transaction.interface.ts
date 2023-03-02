@@ -1,10 +1,14 @@
-export default interface ITransaction {
-    origin:string;
-    destination:string;
+export interface IPostTransaction {
+    accountFrom:string;
+    accountTo:string;
     description:string;
     amount:number;
-    // conversion:string;
-    // status:string;
     date:Date;
     commission:number;
+}
+
+export interface IGetTransactions {
+    from?:Date;
+    to?:Date;
+    sourceAccountID?:string;
 }

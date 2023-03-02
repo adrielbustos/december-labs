@@ -9,10 +9,12 @@ const service = new TransactionService();
 const controller = new TransactionController(service);
 
 router.post("/", [
-    body("destination", "destination is required").isMongoId(),
-    body("description", "description is required").isString().optional({nullable: true}),
+    Middlewares.checkToken,
+    body("accountFrom", "accountFrom is required").isMongoId(),
+    body("accountTo", "accountTo is required").isMongoId(),
     body("amount", "amount is required").isFloat({ min: 0}),
-    body("date", "date is required").isDate(), // TODO is necesary?
+    body("description", "description is required").isString().optional({nullable: true}),
+    // body("date", "date is required").isISO8601().toDate(), // TODO is necesary?
     Middlewares.checkErrors
 ], controller.newTransaction);
 

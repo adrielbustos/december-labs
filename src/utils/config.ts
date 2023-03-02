@@ -7,4 +7,6 @@ export default class Config {
     public static API_LAYER_ACCESS_KEY = process.env.API_LAYER_ACCESS_KEY || "";
     public static API_LAYER_URL = process.env.API_LAYER_URL || "";
     public static CURRENCIES = ["USD", "EUR", "ARS", "BRL", "CLP", "COP", "MXN", "PEN", "UYU"];
+    public static CURRENCIES_SYMBOLS = ["$", "€", "$", "R$", "$", "$", "$", "S/", "$"];
+    public static API_LAY = process.env.API_LAY ?? "3600";
 }

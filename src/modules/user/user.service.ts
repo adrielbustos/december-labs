@@ -8,6 +8,6 @@ export default class UserService {
         return await model.save();
     }
     public getUserByEmail = async (email:string) => {
-        return await UserModel.find({ email });
+        return await UserModel.findOne({ email });
     }
 }

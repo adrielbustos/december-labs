@@ -5,6 +5,9 @@ class AccountService {
     public async findAccountById(id: string) {
         return await AccountModel.findById(id);
     }
+    public async findAccountsByUser(userId: string) {
+        return await AccountModel.find({ user: userId });
+    }
     public async findAccountByUserAndBadge(userId: string, badgeId: string) {
         return await AccountModel.findOne({ user: userId, badge: badgeId });
     }

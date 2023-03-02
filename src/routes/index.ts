@@ -12,7 +12,7 @@ fs.readdirSync(pathRouter).filter((file:string) => {
     const fileWithOutExt = removeExtension(file);
     const skip = ['index'].includes(fileWithOutExt);
     if (!skip) {
-        console.log('CARGAR RUTA ---->', fileWithOutExt);
+        console.log("'\x1b[32m%s\x1b[0m'", 'CARGAR RUTA ---->', fileWithOutExt);
         import(`./${fileWithOutExt}`).then(module => {
             router.use(`/${fileWithOutExt}`, module.default);
         }).catch(error => {
@@ -22,8 +22,9 @@ fs.readdirSync(pathRouter).filter((file:string) => {
 })
 
 router.get('*', (req:Request, res:Response) => {
-    res.status(404)
-    res.send({ error: 'Not found' })
+    res.status(404);
+    // console.log(req);
+    res.send({ error: 'Not found 2' })
 })
 
 export default router;

@@ -1,11 +1,11 @@
 import { Schema, model } from "mongoose";
 const transactionSchema = new Schema({
-    origin: {
+    accountFrom: {
         type: Schema.Types.ObjectId,
         required: true,
         ref: 'account'
     },
-    destination: {
+    accountTo: {
         type: Schema.Types.ObjectId,
         required: true,
         ref: 'account'
@@ -14,11 +14,11 @@ const transactionSchema = new Schema({
         type: Number,
         required: true
     },
-    conversion: { // para saber a cuanto se convirtio ese momento
-        type: Schema.Types.ObjectId,
-        required: true,
-        ref: 'conversion'
-    },
+    // conversion: { // para saber a cuanto se convirtio ese momento
+    //     type: Schema.Types.ObjectId,
+    //     required: true,
+    //     ref: 'conversion'
+    // },
     // status: {
     //     type: Schema.Types.ObjectId,
     //     required: true,
