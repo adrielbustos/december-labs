@@ -99,22 +99,6 @@ class TransactionService {
         });
     }
 
-    private createComision(transaction: IPostTransaction) {
-        const comision = transaction.amount * (Config.COMISION / 100);
-        const newTransaction: IPostTransaction = {
-            accountFrom: transaction.accountFrom,
-            accountTo: Config.ADMIN_ACCOUNT_ID,
-            description: "Comision",
-            amount: comision,
-            date: transaction.date,
-            commission: 0
-        }
-        this.newTransaction(newTransaction).catch((error: any) => {
-            HandleReqError.systemError(error, "Error to create comision transaction");
-        });
-        return comision;
-    }
-
     private async validateTransaction(transaction: IPostTransaction) {
         const acountService = new AccountService();
         const [
@@ -137,6 +121,22 @@ class TransactionService {
             throw new Error("Origin account has not enough balance");
         }
         return [origin, destination];
+    }
+
+    private createComision(transaction: IPostTransaction) {
+        const comision = transaction.amount * (Config.COMISION / 100);
+        const newTransaction: IPostTransaction = {
+            accountFrom: transaction.accountFrom,
+            accountTo: Config.ADMIN_ACCOUNT_ID,
+            description: "Comision",
+            amount: comision,
+            date: transaction.date,
+            commission: 0
+        }
+        this.newTransaction(newTransaction).catch((error: any) => {
+            HandleReqError.systemError(error, "Error to create comision transaction");
+        });
+        return comision;
     }
 
 }
