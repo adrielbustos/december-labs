@@ -18,4 +18,4 @@ router.post("/", [
     Middlewares.checkErrors
 ], controller.newTransaction);
 
-export default router;
+export { router };

@@ -16,4 +16,4 @@ router.get("/", [
     Middlewares.checkErrors
 ], controller.getTransactions);
 
-export default router;
+export { router };

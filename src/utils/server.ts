@@ -2,11 +2,10 @@ import express, { Request, Response, NextFunction, Application } from "express";
 import cors from "cors";
 import { initDb } from "./db";
 import Config from "./config";
-import indexRoutes from '../routes';
+import { router } from "../routes";
 import ApiLayerService from "../libs/apilayer/apilayer.service";
 import MockData from "./_mockData";
-
-import transactionRoutes from "../routes/transactions";
+import HandleReqError from "./handleError";
 
 class Server {
 
@@ -37,17 +36,29 @@ class Server {
                 ApiLayerService.init().then(() => {
 
                     console.log('\x1b[32m%s\x1b[0m', "ApiLayerService initialized");
-                    // TODO set timeout to 1 hour for update exchange rates
+
+                    setInterval(() => {
+                        console.log('\x1b[33m%s\x1b[0m', "Getting exchange rates from ApiLayer...");
+                        ApiLayerService.init(true).then(() => {
+                            console.log('\x1b[32m%s\x1b[0m', "ApiLayerService updated");
+                        }).catch((error: any) => {
+                            console.log('\x1b[31m%s\x1b[0m', "Error to update ApiLayerService: ", error);
+                            HandleReqError.systemError(error, "Error to update ApiLayerService");
+                        });
+                    }, 60 * Config.API_LAY * 1000)
+
                     this.app.listen(this.port, () => {
                         console.log('\x1b[32m%s\x1b[0m', "Server active!! -> PORT: " + this.port + "");
                     });
 
                 }).catch((error: any) => {
                     console.log('\x1b[31m%s\x1b[0m', "Error to initialize ApiLayerService: ", error);
+                    HandleReqError.systemError(error, "Error to initialize ApiLayerServic");
                 });
 
             }).catch((error: any) => {
                 console.log('\x1b[31m%s\x1b[0m', "Error to initialize mock data: ", error);
+                HandleReqError.systemError(error, "Error to initialize mock data");
             });
         });
     }
@@ -59,7 +70,7 @@ class Server {
             try {
                 next();
             } catch (error: any) {
-                res.status(500).json({ status: false, msg: JSON.stringify(error) });
+                HandleReqError.httpError(res, error, "Error to initialize mock data");
             }
         });
     }
@@ -67,10 +78,9 @@ class Server {
     private routes() {
         this.app.use((err: any, req: Request, res: Response, next: NextFunction) => {
             console.error(err.stack);
-            res.status(500).send('Something went wrong!');
+            HandleReqError.httpError(res, err, "Error to initialize mock data");
         });
-        this.app.use(Config.API_PREFIX + "/transactions", transactionRoutes);
-        this.app.use(Config.API_PREFIX, indexRoutes);
+        this.app.use(Config.API_PREFIX, router);
     }
 
 }

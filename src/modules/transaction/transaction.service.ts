@@ -42,7 +42,11 @@ class TransactionService {
         return await new TransactionModel(transaction).save();
     }
 
-    public async getTransactions(query: IGetTransactions) {
+    public async getTransactionsByUser(user_id:string, query: IGetTransactions) {
+        const allUserAccounts = await new AccountService().findAccountsByUser(user_id);
+        if (query.sourceAccountID && !allUserAccounts.find((account) => account._id.toString() === query.sourceAccountID)) {
+            throw new Error("Only you can see your transactions");
+        }
         const filter: any = {};
         if (query.from) {
             filter.date = { $gte: query.from };
@@ -54,8 +58,15 @@ class TransactionService {
                 filter.date = { $lte: query.to };
             }
         }
+        const allUserAccountsIds = allUserAccounts.map((account) => account._id);
         if (query.sourceAccountID) {
+            // filter.$or = [
+            //     { accountFrom: account_id },
+            //     { accountTo: account_id }
+            // ];
             filter.accountFrom = query.sourceAccountID;
+        } else {
+            filter.accountFrom = { $in: allUserAccountsIds };
         }
         const userTransactions = await TransactionModel.find(filter).populate({
             path: "accountFrom",
@@ -75,6 +86,7 @@ class TransactionService {
                 amount: transaction.amount,
                 description: transaction.description,
                 commission: transaction.commission,
+                totalDebited: transaction.amount + transaction.commission,
                 accountFrom: {
                     id: transaction.accountFrom._id,
                     name: transaction.accountFrom.user.name,

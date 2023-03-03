@@ -20,4 +20,4 @@ router.post("/login", [
 //     Middlewares.checkErrors
 // ], controller.register);
 
-export default router;
+export { router };

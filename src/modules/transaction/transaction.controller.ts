@@ -21,7 +21,10 @@ class TransactionController {
                 return res.status(401).json({message: "accountFrom do not exist or you do not have permission to use it"});
             }
             const transaction = await this.service.newTransaction(body);
-            return res.status(201).json(transaction);
+            return res.status(201).json({
+                ...transaction.toObject(),
+                totalDebited: transaction.amount + transaction.commission
+            });
         } catch (error:any) {
             HandleReqError.httpError(res, error, "Error to create new transaction");
         }
@@ -30,15 +33,11 @@ class TransactionController {
     public getTransactions = async (req: Request, res: Response) => {
         const query = req.query as IGetTransactions;
         const user_id = req.cookies.user_id as string;
-        const allUserAccounts = await new AccountService().findAccountsByUser(user_id);
-        if (query.sourceAccountID && !allUserAccounts.find((account) => account._id.toString() === query.sourceAccountID)) {
-            return res.status(401).json({message: "Only you can see your transactions"});
-        }
         if (query.from && query.to && (query.from > query.to)) {
             return res.status(400).json({message: "`to` date must be greater than `from` date"});
         }
         try {
-            const transactions = await this.service.getTransactions(query);
+            const transactions = await this.service.getTransactionsByUser(user_id, query);
             return res.status(200).json(transactions);
         } catch (error:any) {
             HandleReqError.httpError(res, error, "Error to get transactions");

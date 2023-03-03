@@ -17,6 +17,14 @@ class UserController {
             HandleReqError.httpError(res, error, "Error to create new user");
         }
     }
+    public getAccounts = async (req: Request, res: Response) => {
+        try {
+            const user = await this.service.getAccountsByUserID(req.cookies.user_id);
+            return res.status(201).json(user);
+        } catch (error:any) {
+            HandleReqError.httpError(res, error, "Error to create new user");
+        }
+    }
 }
 
 export default UserController;

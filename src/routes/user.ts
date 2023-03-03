@@ -15,4 +15,8 @@ router.post("/", [
     Middlewares.checkErrors
 ], uController.newUser);
 
-export default router;
+router.get("/accounts", [
+    Middlewares.checkToken
+], uController.getAccounts);
+
+export { router };

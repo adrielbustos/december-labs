@@ -1,5 +1,4 @@
 import axios from "axios";
-import ConversionModel from "../../modules/conversion/conversion.schema";
 import Config from "../../utils/config";
 
 class ApiLayerService {
@@ -37,7 +36,7 @@ class ApiLayerService {
         if (!fromConversion || !toConversion) {
             throw new Error("Error to find exchange rates");
         }
-        return ((amount * toConversion.value) / fromConversion.value);
+        return Number(((amount * toConversion.value) / fromConversion.value).toFixed(2));
     }
 
     public static getInstance(): ApiLayerService {
@@ -48,21 +47,9 @@ class ApiLayerService {
     }
 
     public async init(forced = false) {
-        // const lasUpdated = await ConversionModel.find();
-        // console.log("lasUpdated.length > 0 ", lasUpdated.length > 0);
-        // let lastUpdated = null;
-        // if (lasUpdated.length > 0) {
-        //     lastUpdated = lasUpdated[0];
-        //     const now = new Date();
-        //     const diff = Math.abs(now.getTime() - lastUpdated.date.getTime());
-        //     const diffMinutes = Math.floor((diff / 1000) / 60);
-        //     if (diffMinutes < Number(Config.API_LAY)) {
-        //         console.log("Exchange rates are updated");
-        //         this.alreadyInit = true;
-        //         console.log("All exchange rates: ", this.conversions);
-        //         return;
-        //     }
-        // }
+        if (this.alreadyInit && !forced) {
+            return;
+        }
         const response = await axios.get(`${this.url}/latest?symbols=${this.currencies.join(",")}&base=${this.base_currency}`, {
             headers: this.headers
         });
@@ -77,16 +64,6 @@ class ApiLayerService {
                 this.conversions[index].value = value;
             }
         }
-        // console.log("All exchange rates: ", this.conversions);
-        // if (lastUpdated != null) {
-        //     lastUpdated.update({
-        //         date: new Date(),
-        //     });
-        // } else {
-        //     new ConversionModel({
-        //         date: new Date(),
-        //     }).save();
-        // }
         this.alreadyInit = true;
     }
 }

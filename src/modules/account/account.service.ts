@@ -6,7 +6,7 @@ class AccountService {
         return await AccountModel.findById(id).populate("user");
     }
     public async findAccountsByUser(userId: string) {
-        return await AccountModel.find({ user: userId });
+        return await AccountModel.find({ user: userId }).populate("badge");
     }
     public async findAccountByUserAndBadge(userId: string, badgeId: string) {
         return await AccountModel.findOne({ user: userId, badge: badgeId });
