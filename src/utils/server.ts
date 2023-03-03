@@ -6,6 +6,8 @@ import indexRoutes from '../routes';
 import ApiLayerService from "../libs/apilayer/apilayer.service";
 import MockData from "./_mockData";
 
+import transactionRoutes from "../routes/transactions";
+
 class Server {
 
     private app: Application;
@@ -67,6 +69,7 @@ class Server {
             console.error(err.stack);
             res.status(500).send('Something went wrong!');
         });
+        this.app.use(Config.API_PREFIX + "/transactions", transactionRoutes);
         this.app.use(Config.API_PREFIX, indexRoutes);
     }
 

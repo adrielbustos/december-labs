@@ -17,14 +17,6 @@ class MockData {
             accounts: [
                 {
                     balance: 0,
-                    badge: "UYU"
-                },
-                {
-                    balance: 0,
-                    badge: "ARS"
-                },
-                {
-                    balance: 0,
                     badge: "USD"
                 }
             ]
@@ -77,18 +69,29 @@ class MockData {
         for (const user of this.users) {
             const userExists = await new UserService().getUserByEmail(user.email);
             if (userExists) {
-                // console.log("userExists ", userExists);
+                if (userExists.email === "user1@gmail.com") {
+                    Config.setUserID(userExists._id.toString());
+                }
                 for (const account of user.accounts) {
                     const badge = await new BadgeService().findeByName(account.badge);
                     const accountExists = await new AccountService().findAccountByUserAndBadge(userExists._id.toString(), badge?._id.toString() ?? "");
-                    // console.log("!accountExists ", !accountExists);
                     if (!accountExists) {
                         const accountModel = new AccountModel({
                             balance: user.accounts[0].balance,
                             badge: badge?._id.toString(),
                             user: userExists._id.toString()
                         });
-                        accountModel.save();
+                        accountModel.save().then((newAccount) => {
+                            if (userExists.email === "admin@gmail.com") {
+                                Config.setAdminAccountID(newAccount._id.toString());
+                                console.log('\x1b[32m%s\x1b[0m', "Admin USD account created -> ID: " + newAccount._id.toString());
+                            }
+                        });
+                    } else {
+                        if (userExists.email === "admin@gmail.com") {
+                            Config.setAdminAccountID(accountExists._id.toString());
+                            console.log('\x1b[32m%s\x1b[0m', "Admin USD account created -> ID: " + accountExists._id.toString());
+                        }
                     }
                 }
                 continue;
@@ -99,6 +102,9 @@ class MockData {
                 password: user.password
             });
             userModel.save().then(async (userSaved) => {
+                if (userSaved.email === "user1@gmail.com") {
+                    Config.setUserID(userSaved._id.toString());
+                }
                 for (const account of user.accounts) {
                     const badge = await new BadgeService().findeByName(account.badge);
                     const accountModel = new AccountModel({
@@ -106,7 +112,12 @@ class MockData {
                         badge: badge?._id.toString(),
                         user: userSaved._id
                     });
-                    accountModel.save();
+                    accountModel.save().then((newAccount) => {
+                        if (user.email === "admin@gmail.com") {
+                            Config.setAdminAccountID(newAccount._id.toString());
+                            console.log('\x1b[32m%s\x1b[0m', "Admin USD account created -> ID: " + newAccount._id.toString());
+                        }
+                    });
                 }
             });
         }

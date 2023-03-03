@@ -3,29 +3,27 @@ import HandleReqError from "../../utils/handleError";
 
 import ApiLayerService from "../../libs/apilayer/apilayer.service";
 import AccountService from "../account/account.service";
+import BadgeService from "../badge/badge.service";
 
 import { IGetTransactions, IPostTransaction } from "./transaction.interface";
 import TransactionModel from "./transaction.schema";
-import BadgeService from "../badge/badge.service";
 
 class TransactionService {
 
-    public constructor() {}
+    public constructor() { }
 
     public async newTransaction(transaction: IPostTransaction) {
         const [
-            origin, 
+            origin,
             destination
         ] = await this.validateTransaction(transaction);
         transaction.commission = 0;
-        transaction.date = new Date();
-        // transaction.date = new Date(transaction.date);
-        if (transaction.accountFrom === transaction.accountTo) {
+        transaction.date = transaction.date ?? new Date();
+        if (origin.user._id.toString() !== destination.user._id.toString() && destination._id.toString() !== Config.ADMIN_ACCOUNT_ID) {
             transaction.commission = this.createComision(transaction);
         }
         let destinationAmunt = transaction.amount;
-        if (origin.badge !== destination.badge) {
-            // const comision = this.createComision(transaction); // TODO se puede hacer una comision cuando se hace una conversion de moneda?
+        if (origin.badge._id.toString() !== destination.badge._id.toString()) {
             const badgeService = new BadgeService();
             const [originBadge, destinationBadge] = await Promise.all([
                 badgeService.findBadgeById(origin.badge._id.toString()),
@@ -34,9 +32,6 @@ class TransactionService {
             if (!originBadge || !destinationBadge) {
                 throw new Error("Error to get badges");
             }
-            // if (originBadge?.name !== destinationBadge?.name) {
-            //     transaction.commission = this.createComision(transaction);
-            // }
             destinationAmunt = ApiLayerService.convertCurrency(transaction.amount, originBadge.name, destinationBadge.name);
         }
         const acountService = new AccountService();
@@ -48,7 +43,7 @@ class TransactionService {
     }
 
     public async getTransactions(query: IGetTransactions) {
-        const filter:any = {};
+        const filter: any = {};
         if (query.from) {
             filter.date = { $gte: query.from };
         }
@@ -60,22 +55,49 @@ class TransactionService {
             }
         }
         if (query.sourceAccountID) {
-            filter.origin = query.sourceAccountID;
+            filter.accountFrom = query.sourceAccountID;
         }
-        return await TransactionModel.find(filter).populate("origin").populate("destination").populate("badge");
+        const userTransactions = await TransactionModel.find(filter).populate({
+            path: "accountFrom",
+            populate: {
+                path: 'user'
+            }
+        }).populate({
+            path: "accountTo",
+            populate: {
+                path: 'user'
+            }
+        });
+        return userTransactions.map((transaction:any) => {
+            return {
+                _id: transaction._id,
+                date: transaction.date,
+                amount: transaction.amount,
+                description: transaction.description,
+                commission: transaction.commission,
+                accountFrom: {
+                    id: transaction.accountFrom._id,
+                    name: transaction.accountFrom.user.name,
+                },
+                accountTo: {
+                    id: transaction.accountTo._id,
+                    name: transaction.accountTo.user.name,
+                }
+            }
+        });
     }
 
     private createComision(transaction: IPostTransaction) {
-        const comision = transaction.amount * (Number(Config.COMISION)/100);
-        const newTransaction:IPostTransaction = {
+        const comision = transaction.amount * (Config.COMISION / 100);
+        const newTransaction: IPostTransaction = {
             accountFrom: transaction.accountFrom,
-            description: "Comision",
             accountTo: Config.ADMIN_ACCOUNT_ID,
+            description: "Comision",
             amount: comision,
             date: transaction.date,
             commission: 0
         }
-        this.newTransaction(newTransaction).catch((error:any) => {
+        this.newTransaction(newTransaction).catch((error: any) => {
             HandleReqError.systemError(error, "Error to create comision transaction");
         });
         return comision;
@@ -84,14 +106,14 @@ class TransactionService {
     private async validateTransaction(transaction: IPostTransaction) {
         const acountService = new AccountService();
         const [
-            origin, 
+            origin,
             destination
         ] = await Promise.all([
             acountService.findAccountById(transaction.accountFrom),
             acountService.findAccountById(transaction.accountTo),
         ]);
         if (!destination) {
-            throw new Error("Destination account not exists");
+            throw new Error("Destination account not exists: " + transaction.accountTo);
         }
         if (!origin) {
             throw new Error("Origin account not exists");

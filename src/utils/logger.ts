@@ -18,7 +18,7 @@ class Logger {
             message,
             info
         }).save();
-        console.log(message);
+        console.log(`${message} / ${type} / ${info}`);
     }
 }
 

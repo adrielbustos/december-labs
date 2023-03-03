@@ -34,8 +34,8 @@ class TransactionController {
         if (query.sourceAccountID && !allUserAccounts.find((account) => account._id.toString() === query.sourceAccountID)) {
             return res.status(401).json({message: "Only you can see your transactions"});
         }
-        if (query.from && query.to && (query.from < query.to)) {
-            return res.status(400).json({message: "from date must be greater than to date"});
+        if (query.from && query.to && (query.from > query.to)) {
+            return res.status(400).json({message: "`to` date must be greater than `from` date"});
         }
         try {
             const transactions = await this.service.getTransactions(query);

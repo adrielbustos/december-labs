@@ -3,7 +3,7 @@ import AccountModel from "./account.schema";
 class AccountService {
     constructor() {}
     public async findAccountById(id: string) {
-        return await AccountModel.findById(id);
+        return await AccountModel.findById(id).populate("user");
     }
     public async findAccountsByUser(userId: string) {
         return await AccountModel.find({ user: userId });

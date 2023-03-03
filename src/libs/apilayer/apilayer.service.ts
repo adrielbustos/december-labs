@@ -32,12 +32,12 @@ class ApiLayerService {
         if (!this.alreadyInit) {
             throw new Error("Error to find exchange rates");
         }
-        const fromIndex = this.conversions.findIndex((item) => item.badge === from);
-        const toIndex = this.conversions.findIndex((item) => item.badge === to);
-        if (fromIndex === -1 || toIndex === -1) {
+        const fromConversion = this.conversions.find((item) => item.badge === from);
+        const toConversion = this.conversions.find((item) => item.badge === to);
+        if (!fromConversion || !toConversion) {
             throw new Error("Error to find exchange rates");
         }
-        return (amount * this.conversions[toIndex].value) / this.conversions[fromIndex].value;
+        return ((amount * toConversion.value) / fromConversion.value);
     }
 
     public static getInstance(): ApiLayerService {
@@ -77,7 +77,7 @@ class ApiLayerService {
                 this.conversions[index].value = value;
             }
         }
-        console.log("All exchange rates: ", this.conversions);
+        // console.log("All exchange rates: ", this.conversions);
         // if (lastUpdated != null) {
         //     lastUpdated.update({
         //         date: new Date(),

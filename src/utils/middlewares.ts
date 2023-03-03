@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { validationResult } from "express-validator";
+import Config from "./config";
 
 export default class Middlewares {
     public static checkErrors(req:Request, res:Response, next:NextFunction) {
@@ -18,7 +19,8 @@ export default class Middlewares {
             // const decoded = jwt.verify(token, Config.SECRET);
             // req.cookies.userId = decoded.id;
             req.cookies = {};
-            req.cookies.user_id = "63ffecd811ffc2e2160581ca";
+            req.cookies.user_id = Config.USER_LOGGED_ID;
+            // req.cookies.user_id = "63ffecd811ffc2e2160581ca";
             return next();
         } catch (error) {
             console.log(error);

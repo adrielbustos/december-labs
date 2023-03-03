@@ -10,8 +10,8 @@ const controller = new TransactionController(service);
 
 router.get("/", [
     Middlewares.checkToken,
-    query("from", "from is required").isDate().optional({nullable: true}),
-    query("to", "to is required").isDate().optional({nullable: true}),
+    query("from", "from is required").isISO8601().toDate().optional({nullable: true}),
+    query("to", "to is required").isISO8601().toDate().optional({nullable: true}),
     query("sourceAccountID", " SourceAccountID is required").isString().optional({nullable: true}),
     Middlewares.checkErrors
 ], controller.getTransactions);
