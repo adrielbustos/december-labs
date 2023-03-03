@@ -45,11 +45,11 @@ docker-compose up
 
 ## Rutas
 ### User Account
-- **GET** /user/accounts
+- **GET** /api/v1/user/accounts
 ### User Transaction
-- **GET** /user/transactions?sourceAccountID=[ID]&from=[DATE]&to=[DATE]
+- **GET** /api/v1/user/transactions?sourceAccountID=[ID]&from=[DATE]&to=[DATE]
 - Date example: `2023-03-03T04:52:16.889Z`
-- **POST** /user/transfer
+- **POST** /api/v1/user/transfer
 - Body example:
 ```
 {
