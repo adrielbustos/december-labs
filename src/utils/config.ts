@@ -11,7 +11,6 @@ class Config {
     public API_LAYER_ACCESS_KEY = process.env.API_LAYER_ACCESS_KEY || "";
     public API_LAYER_URL = process.env.API_LAYER_URL || "";
     public CURRENCIES = ["USD", "EUR", "ARS", "BRL", "CLP", "COP", "MXN", "PEN", "UYU"];
-    public CURRENCIES_SYMBOLS = ["$", "€", "$", "R$", "$", "$", "$", "S/", "$"];
     public API_LAY = Number(process.env.API_LAY) ?? 3600;
     private static instance: Config;
     private constructor() {}

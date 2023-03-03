@@ -16,11 +16,8 @@ export default class Middlewares {
         //     return res.status(403).json({ message: "No token provided!" });
         // }
         try {
-            // const decoded = jwt.verify(token, Config.SECRET);
-            // req.cookies.userId = decoded.id;
             req.cookies = {};
             req.cookies.user_id = Config.USER_LOGGED_ID;
-            // req.cookies.user_id = "63ffecd811ffc2e2160581ca";
             return next();
         } catch (error) {
             console.log(error);

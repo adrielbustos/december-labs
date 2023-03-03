@@ -19,7 +19,7 @@ class Server {
         this.routes();
     }
 
-    public async init() {
+    public init() {
         console.log('\x1b[33m%s\x1b[0m', "trying to connect to mongo...");
         initDb().then((mongo) => {
             mongo.set('strictQuery', false);
